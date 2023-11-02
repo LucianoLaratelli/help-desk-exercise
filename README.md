@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Software Engineering Exercise
 
-## Getting Started
+This repository contains code for a software engineering exercise performed as part of the interview process for a company. 
 
-First, run the development server:
+The repository contains directories for the `frontend` and the `backend`. The frontend is a Next.js app, while the backend is written with express. 
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Development
+
+``` bash
+git clone https://github.com/LucianoLaratelli/help-desk-exercise.git
+cd help-desk-exercise
+cd frontend
+npm i
+cd ../backend 
+npm i
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Manually edit `BACKEND_URL` in `./frontend/src/app/config.ts` to `http://localhost:3001`, then:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+``` bash
+cd frontend
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+In a separate terminal:
 
-## Learn More
+``` bash
+cd backend
+make run
+```
 
-To learn more about Next.js, take a look at the following resources:
+At this point, the frontend will be available at `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Areas of improvement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `BACKEND_URL` should use the local server by default. We should override it via an environment variable in the Dockerfile.
+- No authentication is necessary to interact with the backend server.
+- Deploys are manual. Using Github Actions to handle separate deploys for the frontend and backend is a natural next step.
+- No tests are included to enforce the contract between the frontend and backend.
+- The `types` directory is duplicated between `./frontend` and `./backend`. I tried using symlinks but that didn't work when building the frontend. In the interest of time, I copied it over. This would be better as its own NPM package.
+- A force refresh is necessary to get the admin panel to pick up changes in status. Reactivity could be improved here.
+- Introduction of an auto-formatter and a linter would be welcome additions to this project.
