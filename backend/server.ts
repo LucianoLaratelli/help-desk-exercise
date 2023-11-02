@@ -3,12 +3,14 @@ import { DbTicket, Ticket } from "./types/ticket";
 import { fromZodError } from "zod-validation-error";
 import sqlite3 from "sqlite3";
 import { TicketStatus } from "./types/ticket-status";
+import cors from "cors";
 
 const db = new sqlite3.Database(":memory:");
 
 const app = express();
 const port = 3001;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -73,9 +75,9 @@ app.post("/tickets/:id/response", (req, res) => {
       res.status(500).send(`Database error encountered: ${err}`);
     } else if (row) {
       console.log(
-        `would send email to '${row.email}' (if it were configured) with contents:`,
+        "Would normally send email here with body:",
+        req.body.response,
       );
-      console.log(req.body.response);
       res.status(200).send();
     } else {
       res.status(404).send();
