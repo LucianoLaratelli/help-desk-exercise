@@ -1,11 +1,11 @@
-import Layout from "../components/Layout.1";
+import Layout from "../components/Layout";
 import Link from "next/link";
 import { DbTicket } from "../../../types/ticket";
 import { TicketStatus } from "../../../types/ticket-status";
 import { BACKEND_URL } from "../config";
 
 async function getData() {
-  const res = await fetch(`${BACKEND_URL}/tickets`);
+  const res = await fetch(`${BACKEND_URL}/tickets`, { cache: "no-store" });
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }
