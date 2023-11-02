@@ -57,11 +57,9 @@ app.post("/tickets/:id", (req, res) => {
       "UPDATE tickets SET status = ? WHERE id = ?",
       [TicketStatus.parse(req.body.status), req.params.id],
       function (err: string, row: any) {
-        console.log("guh", err, row);
         if (err) {
           res.status(500).send(`Database error encountered: ${err}`);
         } else {
-          console.log("buh");
           res.status(200).send();
         }
       },
@@ -75,7 +73,7 @@ app.post("/tickets/:id/response", (req, res) => {
       res.status(500).send(`Database error encountered: ${err}`);
     } else if (row) {
       console.log(
-        `would send email to ${row.email} (if it were configured) with contents:`,
+        `would send email to '${row.email}' (if it were configured) with contents:`,
       );
       console.log(req.body.response);
       res.status(200).send();
