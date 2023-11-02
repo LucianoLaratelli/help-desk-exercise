@@ -1,9 +1,10 @@
 "use client";
 import Layout from "./components/Layout";
 import { FormEvent, useState } from "react";
-import { Ticket } from "../../../backend/types/ticket";
+import { Ticket } from "../../types/ticket";
+import { BACKEND_URL } from "./config";
 
-const createUrl = "http://localhost:3001/tickets";
+const createUrl = `${BACKEND_URL}/tickets`;
 
 export default function Page() {
   const [formData, setFormData] = useState<Ticket>({

@@ -1,0 +1,17 @@
+# fly.toml app configuration file generated for black-river-9286 on 2023-11-02T16:39:23-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "black-river-9286"
+primary_region = "mia"
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]

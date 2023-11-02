@@ -1,6 +1,7 @@
 "use client";
-import { DbTicket } from "../../../../../backend/types/ticket";
-import { TicketStatus } from "../../../../../backend/types/ticket-status";
+import { BACKEND_URL } from "@/app/config";
+import { DbTicket } from "../../../../types/ticket";
+import { TicketStatus } from "../../../../types/ticket-status";
 import Layout from "../../components/Layout";
 import { FormEvent, useState, useEffect } from "react";
 
@@ -22,7 +23,7 @@ export default function Page({ params }: { params: { ticketId: string } }) {
   const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:3001/tickets/${params.ticketId}`)
+    fetch(`${BACKEND_URL}/tickets/${params.ticketId}`)
       .then((res) => res.json())
       .then((data) => {
         setTicket(data);
@@ -34,14 +35,11 @@ export default function Page({ params }: { params: { ticketId: string } }) {
     event.preventDefault();
     setStatus(event.currentTarget.value.toString());
 
-    const response = await fetch(
-      `http://localhost:3001/tickets/${params.ticketId}`,
-      {
-        method: "POST",
-        body: JSON.stringify({ status: event.currentTarget.value }),
-        headers: { "Content-Type": "application/json" },
-      },
-    );
+    const response = await fetch(`${BACKEND_URL}/tickets/${params.ticketId}`, {
+      method: "POST",
+      body: JSON.stringify({ status: event.currentTarget.value }),
+      headers: { "Content-Type": "application/json" },
+    });
 
     if (response.ok) {
       setSuccess("Status update was successful.");
@@ -62,7 +60,7 @@ export default function Page({ params }: { params: { ticketId: string } }) {
     event.preventDefault();
     console.log(responseText);
     const response = await fetch(
-      `http://localhost:3001/tickets/${ticket.id}/response`,
+      `${BACKEND_URL}/tickets/${ticket.id}/response`,
       {
         method: "POST",
         body: JSON.stringify({ response: responseText }),
