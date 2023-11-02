@@ -1,13 +1,15 @@
 "use client";
-import { DbTicket, Ticket } from "../../../../../backend/types/ticket";
+import { DbTicket } from "../../../../../backend/types/ticket";
 import { TicketStatus } from "../../../../../backend/types/ticket-status";
 import Layout from "../../components/Layout";
-import { FormEvent, useState, useRef, useEffect } from "react";
+import { FormEvent, useState, useEffect } from "react";
 
 export default function Page({ params }: { params: { ticketId: string } }) {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [responseError, setResponseError] = useState("");
   const [success, setSuccess] = useState("");
+  const [responseSuccess, setResponseSuccess] = useState("");
   const [ticket, setTicket] = useState<DbTicket>({
     name: "",
     email: "",
@@ -15,6 +17,9 @@ export default function Page({ params }: { params: { ticketId: string } }) {
     id: "",
     status: null as unknown as TicketStatus,
   });
+
+  const [shouldHideButton, setShouldHideButton] = useState(true);
+  const [responseText, setResponseText] = useState("");
 
   useEffect(() => {
     fetch(`http://localhost:3001/tickets/${params.ticketId}`)
@@ -44,6 +49,35 @@ export default function Page({ params }: { params: { ticketId: string } }) {
     } else {
       setError(await response.text());
       setSuccess("");
+    }
+  }
+
+  async function onTextAreaChange(event: FormEvent<HTMLTextAreaElement>) {
+    event.preventDefault();
+    setResponseText(event.currentTarget.value);
+    setShouldHideButton(event.currentTarget.value.length == 0);
+  }
+
+  async function onFormSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    console.log(responseText);
+    const response = await fetch(
+      `http://localhost:3001/tickets/${ticket.id}/response`,
+      {
+        method: "POST",
+        body: JSON.stringify({ response: responseText }),
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+
+    if (response.ok) {
+      const target = event.target as HTMLFormElement;
+      target.reset();
+      setResponseSuccess(`Response sent successfully!`);
+      setResponseError("");
+    } else {
+      setResponseError(await response.text());
+      setResponseSuccess("");
     }
   }
 
@@ -90,6 +124,33 @@ export default function Page({ params }: { params: { ticketId: string } }) {
           <p className="text-success">{success}</p>
         </div>
       </div>
+      <form onSubmit={onFormSubmit}>
+        <div className="row my-3">
+          <div className="col-sm-3 fw-bold">Respond to ticket:</div>
+          <div className="col">
+            <textarea
+              className="form-control"
+              onChange={onTextAreaChange}
+            ></textarea>
+          </div>
+        </div>
+        <div className="row align-items-center">
+          <div className="col-sm-3 fw-bold"></div>
+          <div className="col-sm-auto">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              hidden={shouldHideButton}
+            >
+              Send response
+            </button>
+          </div>
+          <div className="col-sm-auto">
+            <p className="text-danger">{responseError}</p>
+            <p className="text-success">{responseSuccess}</p>
+          </div>
+        </div>
+      </form>
     </Layout>
   );
 }

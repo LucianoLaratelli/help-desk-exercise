@@ -18,25 +18,23 @@ app.get("/tickets/", (req, res) => {
   });
 });
 
+const ticketById = (id: string, callback: (err: string, rows: any) => void) => {
+  db.get("SELECT * FROM tickets WHERE id = ?", [id], callback);
+};
+
 app.get("/tickets/:id", (req, res) => {
-  db.get(
-    "SELECT * FROM tickets WHERE id = ?",
-    [req.params.id],
-    function (err: string, row: any) {
-      if (err) {
-        res.status(500).send(`Database error encountered: ${err}`);
-      } else if (row) {
-        res.status(200).send(row);
-      } else {
-        res.status(404).send();
-      }
-    },
-  );
+  ticketById(req.params.id, function (err: string, row: any) {
+    if (err) {
+      res.status(500).send(`Database error encountered: ${err}`);
+    } else if (row) {
+      res.status(200).send(row);
+    } else {
+      res.status(404).send();
+    }
+  });
 });
 
 app.post("/tickets/:id", (req, res) => {
-  console.log(req.body);
-  console.log(TicketStatus.safeParse(req.body.status));
   if (TicketStatus.safeParse(req.body.status).success) {
     db.run(
       "UPDATE tickets SET status = ? WHERE id = ?",
@@ -52,6 +50,22 @@ app.post("/tickets/:id", (req, res) => {
       },
     );
   }
+});
+
+app.post("/tickets/:id/response", (req, res) => {
+  ticketById(req.params.id, function (err: string, row: any) {
+    if (err) {
+      res.status(500).send(`Database error encountered: ${err}`);
+    } else if (row) {
+      console.log(
+        `would send email to ${row.email} (if it were configured) with contents:`,
+      );
+      console.log(req.body.response);
+      res.status(200).send();
+    } else {
+      res.status(404).send();
+    }
+  });
 });
 
 app.post("/tickets", (req, res) => {
