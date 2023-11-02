@@ -13,9 +13,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/tickets/", (req, res) => {
-  db.all("SELECT * from tickets", [], function (err: string, rows: any) {
-    res.status(200).send(JSON.stringify(rows));
-  });
+  db.all(
+    `SELECT * from tickets
+     ORDER BY
+         CASE status
+             WHEN "New" THEN 0
+             WHEN "In Progress" THEN 1
+             WHEN "Resolved" THEN 2
+         END`,
+    [],
+    function (err: string, rows: any) {
+      if (err) {
+        console.log(err);
+        res.status(500).send(`Database error encountered: ${err}`);
+      } else if (rows) {
+        res.status(200).send(JSON.stringify(rows));
+      } else {
+        res.status(404).send();
+      }
+    },
+  );
 });
 
 const ticketById = (id: string, callback: (err: string, rows: any) => void) => {
