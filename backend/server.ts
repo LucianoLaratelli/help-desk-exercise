@@ -70,19 +70,23 @@ app.post("/tickets/:id", (req, res) => {
 });
 
 app.post("/tickets/:id/response", (req, res) => {
-  ticketById(req.params.id, function (err: string, row: any) {
-    if (err) {
-      res.status(500).send(`Database error encountered: ${err}`);
-    } else if (row) {
-      console.log(
-        "Would normally send email here with body:",
-        req.body.response,
-      );
-      res.status(200).send();
-    } else {
-      res.status(404).send();
-    }
-  });
+  if (req.body.response.length == 0) {
+    res.status(500).send("Can't send empty email.");
+  } else {
+    ticketById(req.params.id, function (err: string, row: any) {
+      if (err) {
+        res.status(500).send(`Database error encountered: ${err}`);
+      } else if (row) {
+        console.log(
+          "Would normally send email here with body:",
+          req.body.response,
+        );
+        res.status(200).send();
+      } else {
+        res.status(404).send();
+      }
+    });
+  }
 });
 
 app.post("/tickets", (req, res) => {
